@@ -29,6 +29,20 @@ const userEmail = document.getElementById('userEmail');
 const userPhoto = document.getElementById('userPhoto');
 const lastLogin = document.getElementById('lastLogin');
 
+// 將日期轉換為 CST 時間格式
+function formatDateToCST(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString("en-US", {
+    timeZone: "Asia/Taipei",  // 設定時區為中原標準時間
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
 // Google Sign-In
 function googleSignIn(isRegister) {
   signInWithPopup(auth, provider)
@@ -56,11 +70,12 @@ function googleSignIn(isRegister) {
           if (snapshot.exists()) {
             // 如果已註冊，更新最後登入時間
             const data = snapshot.val();
+            const formattedLoginTime = formatDateToCST(data.lastLogin); // 格式化最後登入時間為 CST
             update(userRef, { lastLogin: new Date().toISOString() });
             userName.textContent = data.name;
             userEmail.textContent = data.email;
             userPhoto.src = data.photoURL;
-            lastLogin.textContent = data.lastLogin;
+            lastLogin.textContent = formattedLoginTime;
             userInfo.style.display = 'block';
           } else {
             // 如果未註冊，提示用戶註冊
